@@ -6,3 +6,6 @@ class Collector(models.Model):
 	collector_id = models.IntegerField()
 	collector_location = models.CharField(max_length=50)
 	number_of_trips = models.IntegerField()
+
+	def __str__(self):
+		return self.name

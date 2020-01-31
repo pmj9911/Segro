@@ -114,8 +114,12 @@ def bin_information(request):
 	if request.method == 'POST':
 			serializer = SmartBinSerializer(list_of_bins,many=True)
 			# print("inside get")
-			qs = dict(serializer.data[0])
-			return Response(qs)
+			try:
+				qs = dict(serializer.data[0])
+				return Response(qs)
+			except Exception as e:
+				print(e)
+				return Response({"bin info" : "No bin found for corresponding latitude and longitude"}, content_type='application/json')
 
 @api_view(['GET',])
 def reset_information(request):

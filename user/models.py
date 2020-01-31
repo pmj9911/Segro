@@ -6,4 +6,7 @@ class Segro_User(models.Model):
 	user_location = models.CharField(max_length=50)
 	#user_longitude = models.CharField(max_length=50)
 
+	def __str__(self):
+		return self.username
+
 

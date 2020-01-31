@@ -53,6 +53,7 @@ def nearby_bin(request):
 			if distance[i] in distance_sort:
 				indices.append(i)
 		nearby_ten_bins={}
+		list_ten_bins=[]
 		dictionary={}
 		lats = []
 		longs = []
@@ -61,11 +62,15 @@ def nearby_bin(request):
 			lats.append(bin_list[j]["latitude"])
 			dictionary["longitude"]=bin_list[j]["longitude"]
 			longs.append(bin_list[j]["longitude"])
+			list_ten_bins.append(dictionary.copy())
+
 			#nearby_ten_bins[(j+1)] = dictionary
 			# nearby_ten_bins=dict(nearby_ten_bins.items()+dictionary.items())
 			print(dictionary)
+		print(list_ten_bins)
+		nearby_ten_bins["results"]=list_ten_bins
 		print(type(nearby_ten_bins))
-		return Response({ 'lats':lats, 'longs': longs },content_type='application/json')
+		return Response(nearby_ten_bins,content_type='application/json')
 
 
 	except Exception as e:
