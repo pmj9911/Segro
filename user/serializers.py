@@ -5,3 +5,5 @@ class SegroUserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Segro_User
 		fields = ['username','user_location']
+
+
