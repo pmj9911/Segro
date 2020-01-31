@@ -82,11 +82,14 @@ def simulation(request):
 		return HttpResponse(status=403)
 	# if reuqest.method=='GET':
 	if request.method == 'GET':
-		serializer = SmartBinSerializer(full_bins,many=True)
-		# print("inside get")
-		qs = dict(serializer.data[0])
-		return Response(qs)
-
+		try:
+			serializer = SmartBinSerializer(full_bins,many=True)
+			# print("inside get")
+			qs = dict(serializer.data[0])
+			return Response(qs)
+		except Exception as e:
+			print(e)
+			return Response({'reason':'all bins empty'},content_type='application/json',status=200)
 @api_view(['POST',])
 def bin_information(request):
 	try:
