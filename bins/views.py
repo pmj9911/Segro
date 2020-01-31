@@ -8,6 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from bins.models import SmartBins
 from bins.serializers import SmartBinSerializer
 from random import randint
+import json
+from django.core import serializers
+from django.http import JsonResponse
+from django.forms.models import model_to_dict
 # Create your views here.
 @api_view(['GET',])
 def bins_list(request):
@@ -72,3 +76,25 @@ def simulation(request):
 		# print("inside get")
 		return Response(serializer.data)
 
+@api_view(['POST',])
+def bin_information(request):
+	try:
+		latitude = float(request.POST.get('latitude'))
+		longitude = float(request.POST.get('longitude'))
+		print(latitude)
+		list_of_bins = SmartBins.objects.filter(latitude=latitude,longitude=longitude).values()
+		# for key,value in list_of_bins:
+		# 	print(key,value)
+		# print(dtype(list_of_bins))
+		# print(list_of_bins.values())
+		# json_list = json.dumps(list_of_bins)
+		# list_of_bins = serializers.serialize('json', self.get_queryset())
+		# return Response(list_of_bins, content_type='application/json',status=200)
+	except Exception as e:
+		traceback.print_exc()
+		print(e)
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'POST':
+			serializer = SmartBinSerializer(list_of_bins,many=True)
+			# print("inside get")
+			return Response(serializer.data)
