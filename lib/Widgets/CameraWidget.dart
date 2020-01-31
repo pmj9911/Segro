@@ -29,7 +29,7 @@ class _CameraWidgetState extends State<CameraWidget> {
     print("inside upload");
     // isSubmitted = true;
 
-    http.post('https://00ecd78c.ngrok.io/prediction', body: {
+    http.post('https://23cf619e.ngrok.io/prediction', body: {
       "image": base64Image,
       "name": fileName,
     }).then((res) {

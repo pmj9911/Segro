@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
@@ -61,7 +62,7 @@ String postToJson(SingleBin pointCoordiantes) {
 Future<Bin> sendCords(SingleBin pointCoordiantes) async {
   print('@@@@@@@@@@ ${postToJson(pointCoordiantes)}');
   final response = await http.post(
-    'https://204902f0.ngrok.io/bins/bin_information/',
+    'https://23cf619e.ngrok.io/bins/bin_information/',
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     },
@@ -82,8 +83,41 @@ class InfoBins extends StatefulWidget {
 }
 
 class _InfoBinsState extends State<InfoBins> {
-  Widget binInfo(String infoText, String data) {
-    return Padding(
+  Position _currentPosition;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        if (_currentPosition != null)
+          Text(
+              "LAT: ${_currentPosition.latitude}, LNG: ${_currentPosition.longitude}"),
+        FlatButton(
+          child: Text("Get location"),
+          onPressed: () {
+            _getCurrentLocation();
+          },
+        ),
+      ],
+    );
+  }
+
+  _getCurrentLocation() {
+    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+}
+/* Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -144,8 +178,10 @@ class _InfoBinsState extends State<InfoBins> {
                   ),
                 ),
                 binInfo("location : ", snapshot.data.locationName.toString()),
-                binInfo("garbage level : ", snapshot.data.garbageValue.toString()),
-                binInfo("type of sector : ", snapshot.data.wasteType.toString()),
+                binInfo(
+                    "garbage level : ", snapshot.data.garbageValue.toString()),
+                binInfo(
+                    "type of sector : ", snapshot.data.wasteType.toString()),
               ],
             ),
             // mainAxisAlignment: MainAxisAlignment.center,
@@ -183,22 +219,4 @@ class _InfoBinsState extends State<InfoBins> {
           ),
         );
       },
-    );
-  }
-}
-
-/*
-
-Future<Bin> getBinsInfo() async {
-  print("############################################################################################################################################################################################################");
-  String url = 'https://204902f0.ngrok.io/bins/simulation';
-  final response = await http.get(url, headers: {"Accept": "application/json"});
-
-  if (response.statusCode == 200) {
-    print(json.decode(response.body));
-    return Bin.fromJson(json.decode(response.body));
-  } else {
-    throw Exception('Failed to load post');
-  }
-}
- */
+    );*/

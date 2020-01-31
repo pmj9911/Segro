@@ -3,7 +3,7 @@ import 'dart:async';
 // import 'dart:convert';
 // import 'ShowRoute.dart';
 
-// import 'InfoBins.dart';
+import 'InfoBins.dart';
 import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,7 +16,7 @@ class SimulateBins extends StatefulWidget {
 class _SimulateBinsState extends State<SimulateBins> {
   // static const String _API_KEY = 'AIzaSyCVVe3n7f-dgPxwUg6PQspksqFtmx5SOYQ';
 
-  static final LatLng center = const LatLng(15.3929092,73.8805639);
+  static final LatLng center = const LatLng(15.3929092, 73.8805639);
 
   GoogleMapController controller;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
@@ -154,11 +154,11 @@ class _SimulateBinsState extends State<SimulateBins> {
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
               width: double.infinity,
-              height: 400.0,
+              height: 300.0,
               child: GoogleMap(
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: const CameraPosition(
-                  target: LatLng(15.3916743,73.8788575),
+                  target: LatLng(15.3916743, 73.8788575),
                   zoom: 13.0,
                 ),
                 markers: Set<Marker>.of(markers.values),
@@ -166,6 +166,7 @@ class _SimulateBinsState extends State<SimulateBins> {
             ),
           ),
         ),
+        InfoBins(),
       ],
     );
   }
