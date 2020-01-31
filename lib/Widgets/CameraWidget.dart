@@ -5,24 +5,27 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+
+import 'predictionWidget.dart';
 // import 'camera_save_image.dart';
 // import 'package:camera/camera.dart';
 
-class ClassifyImage extends StatefulWidget {
+class CameraWidget extends StatefulWidget {
   final Function onSelectImage;
 
-  ClassifyImage(this.onSelectImage);
+  CameraWidget(this.onSelectImage);
 
   @override
-  _ClassifyImageState createState() => _ClassifyImageState();
+  _CameraWidgetState createState() => _CameraWidgetState();
 }
 
-class _ClassifyImageState extends State<ClassifyImage> {
+class _CameraWidgetState extends State<CameraWidget> {
   File _storedImage;
   void _upload() {
     if (_storedImage == null) return;
     String base64Image = base64Encode(_storedImage.readAsBytesSync());
     String fileName = _storedImage.path.split("/").last;
+    print(fileName);
     print("inside upload");
     // isSubmitted = true;
 
@@ -38,7 +41,6 @@ class _ClassifyImageState extends State<ClassifyImage> {
       print(err);
     });
   }
-  // this function may not work since problems were faced in django rest api accepting the image as a part of the api payload .
 
   Future<void> _takePicture() async {
     final imageFile = await ImagePicker.pickImage(
@@ -82,65 +84,64 @@ class _ClassifyImageState extends State<ClassifyImage> {
     return Column(
       children: <Widget>[
         isSubmitted
-            ? Center(
-                child: Text("Your image has been uploaded successfully!"),
-              )
-            : Center(),
-        Container(
-          width: double.infinity,
-          height: 450,
-          margin: EdgeInsets.all(10),
-          // padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            border: Border.all(width: 1, color: Colors.grey),
-          ),
-          child: _storedImage != null
-              ? Image.file(
-                  _storedImage,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                )
-              : Text(
-                  'No Image Taken',
-                  textAlign: TextAlign.center,
+            ? PredictionWidget()
+            : Container(
+                width: double.infinity,
+                height: 450,
+                margin: EdgeInsets.all(10),
+                // padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Colors.grey),
                 ),
-          alignment: Alignment.center,
-        ),
+                child: _storedImage != null
+                    ? Image.file(
+                        _storedImage,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      )
+                    : Text(
+                        'No Image Taken',
+                        textAlign: TextAlign.center,
+                      ),
+                alignment: Alignment.center,
+              ),
         SizedBox(
           width: 10,
         ),
-        Expanded(
-          child: Row(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  FlatButton.icon(
-                    icon: Icon(Icons.camera),
-                    label: Text('Take Picture'),
-                    textColor: Theme.of(context).primaryColor,
-                    onPressed: _takePicture,
-                  ),
-                  FlatButton.icon(
-                    icon: Icon(Icons.photo_album),
-                    label: Text('select image'),
-                    textColor: Theme.of(context).primaryColor,
-                    onPressed: _selectPicture,
-                  ),
-                ],
+        isSubmitted
+            ? SizedBox()
+            : Expanded(
+                child: Row(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        FlatButton.icon(
+                          icon: Icon(Icons.camera),
+                          label: Text('Take Picture'),
+                          textColor: Theme.of(context).primaryColor,
+                          onPressed: _takePicture,
+                        ),
+                        FlatButton.icon(
+                          icon: Icon(Icons.photo_album),
+                          label: Text('select image'),
+                          textColor: Theme.of(context).primaryColor,
+                          onPressed: _selectPicture,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        IconButton(
+                          onPressed: _upload,
+                          icon: Icon(Icons.file_upload),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: _upload,
-                    icon: Icon(Icons.file_upload),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
       ],
     );
   }

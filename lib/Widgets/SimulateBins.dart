@@ -1,11 +1,11 @@
+import 'dart:math';
 import 'dart:async';
-import 'dart:convert';
-import 'InfoBins.dart';
-import 'data/error.dart';
-import 'data/place_response.dart';
-import 'data/result.dart';
+// import 'dart:convert';
+// import 'ShowRoute.dart';
+
+// import 'InfoBins.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class SimulateBins extends StatefulWidget {
@@ -14,93 +14,159 @@ class SimulateBins extends StatefulWidget {
 }
 
 class _SimulateBinsState extends State<SimulateBins> {
-  static const String _API_KEY = 'AIzaSyCVVe3n7f-dgPxwUg6PQspksqFtmx5SOYQ';
+  // static const String _API_KEY = 'AIzaSyCVVe3n7f-dgPxwUg6PQspksqFtmx5SOYQ';
 
-  static double latitude = 40.7484405;
-  static double longitude = -73.9878531;
-  static const String baseUrl =
-      "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+  static final LatLng center = const LatLng(15.3929092,73.8805639);
 
-  Error error;
-  List<Result> places;
-  bool searching = true;
-  String keyword;
-  Completer<GoogleMapController> _controller = Completer();
-// 2
-  static final CameraPosition _myLocation = CameraPosition(
-    target: LatLng(15.391698, 73.880387),
-    zoom: 10.0,
-  );
+  GoogleMapController controller;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  MarkerId selectedMarker;
+  int _markerIdCounter = 1;
 
-  @override
-  Widget build(BuildContext context) {
-    MarkerId markerId1 = MarkerId("1");
-
-    Marker marker1 = Marker(
-      markerId: markerId1,
-      position: LatLng(17.385044, 78.486671),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
-    );
-    Map markers = {};
-
-    markers[markerId1] = marker1;
-    return Scaffold(
-      // 1
-      body: Column(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(10),
-            child: new GoogleMapWidget(
-                myLocation: _myLocation, controller: _controller),
-            height: 300,
-          ),
-          Container(
-            child: InfoBins(),
-            height: 280,
-          ),
-        ],
-      ),
-    );
+  void _onMapCreated(GoogleMapController controller) {
+    this.controller = controller;
   }
 
-  void _handleResponse(data) {
-    // bad api key or otherwise
-    if (data['status'] == "REQUEST_DENIED") {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void _onMarkerTapped(MarkerId markerId) {
+    final Marker tappedMarker = markers[markerId];
+    if (tappedMarker != null) {
       setState(() {
-        error = Error.fromJson(data);
+        if (markers.containsKey(selectedMarker)) {
+          final Marker resetOld = markers[selectedMarker]
+              .copyWith(iconParam: BitmapDescriptor.defaultMarker);
+          markers[selectedMarker] = resetOld;
+        }
+        selectedMarker = markerId;
+        final Marker newMarker = tappedMarker.copyWith(
+          iconParam: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
+        );
+        markers[markerId] = newMarker;
       });
-      // success
-    } else if (data['status'] == "OK") {
-    } else {
-      print(data);
     }
   }
-}
 
-class GoogleMapWidget extends StatelessWidget {
-  const GoogleMapWidget({
-    Key key,
-    @required CameraPosition myLocation,
-    @required Completer<GoogleMapController> controller,
-  })  : _myLocation = myLocation,
-        _controller = controller,
-        super(key: key);
+  void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
+    final Marker tappedMarker = markers[markerId];
+    if (tappedMarker != null) {
+      await showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                actions: <Widget>[
+                  FlatButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+                content: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 66),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text('Old position: ${tappedMarker.position}'),
+                        Text('New position: $newPosition'),
+                      ],
+                    )));
+          });
+    }
+  }
 
-  final CameraPosition _myLocation;
-  final Completer<GoogleMapController> _controller;
+  void _add() {
+    final int markerCount = markers.length;
+
+    if (markerCount == 12) {
+      return;
+    }
+
+    final String markerIdVal = 'marker_id_$_markerIdCounter';
+    _markerIdCounter++;
+    final MarkerId markerId = MarkerId(markerIdVal);
+
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: LatLng(
+        center.latitude + sin(_markerIdCounter * pi / 6.0) / 20.0,
+        center.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
+      ),
+      infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
+      onTap: () {
+        _onMarkerTapped(markerId);
+      },
+      onDragEnd: (LatLng position) {
+        _onMarkerDragEnd(markerId, position);
+      },
+    );
+
+    setState(() {
+      markers[markerId] = marker;
+    });
+  }
+
+  void _remove() {
+    setState(() {
+      if (markers.containsKey(selectedMarker)) {
+        markers.remove(selectedMarker);
+      }
+    });
+  }
+
+  void _changePosition() {
+    final Marker marker = markers[selectedMarker];
+    final LatLng current = marker.position;
+    final Offset offset = Offset(
+      center.latitude - current.latitude,
+      center.longitude - current.longitude,
+    );
+    setState(() {
+      markers[selectedMarker] = marker.copyWith(
+        positionParam: LatLng(
+          center.latitude + offset.dy,
+          center.longitude + offset.dx,
+        ),
+      );
+    });
+  }
+
+  Future<void> _toggleVisible() async {
+    final Marker marker = markers[selectedMarker];
+    setState(() {
+      markers[selectedMarker] = marker.copyWith(
+        visibleParam: !marker.visible,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      // 2
-      initialCameraPosition: _myLocation,
-      // 3
-      mapType: MapType.normal,
-      // markers: Set.of(markers.values),
-      // 4
-      onMapCreated: (GoogleMapController controller) {
-        _controller.complete(controller);
-      },
+    return Column(
+      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      // crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 400.0,
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: const CameraPosition(
+                  target: LatLng(15.3916743,73.8788575),
+                  zoom: 13.0,
+                ),
+                markers: Set<Marker>.of(markers.values),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -22,7 +22,7 @@ class _SimulatorScreenState extends State<SimulatorScreen> {
   void initState() {
     _pages = [
       {
-        'page': ClassifyImage(_selectImage),
+        'page': CameraWidget(_selectImage),
         'title': 'Simulate Food Classifier',
       },
       {
