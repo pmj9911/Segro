@@ -12,6 +12,11 @@ import json
 from django.core import serializers
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
+import cv2
+import numpy as np
+from keras.preprocessing import image
+from keras.models import load_model
+
 # Create your views here.
 @api_view(['GET',])
 def bins_list(request):
@@ -22,7 +27,8 @@ def bins_list(request):
 
 	if request.method == 'GET':
 		serializer = SmartBinSerializer(list,many=True)
-		return Response(serializer.data)
+		qs = dict(serializer.data[0])
+		return Response(qs)
 
 @api_view(['GET',])
 def simulation(request):
@@ -41,12 +47,16 @@ def simulation(request):
 		try:
 			random_bin = SmartBins.objects.filter(needs_to_be_collected=False).values()[randint(0,count-1)]
 		except:
-			return HttpResponse({'all bins full'},status=200)
+			ctx = {
+			"reason" : "string",
+			}
+			return Response(ctx,content_type='application/json',status=200)
 		# print(len(list_of_bins))
 		# print(random_bin['garbage_value'])
 		if(random_bin['garbage_value']>= threshold):
 			if (random_bin['garbage_value']>=100):
 				random_bin['bin_full']=True
+				random_bin['waste_collected']=True
 				random_bin['needs_to_be_collected']=True
 			else:
 				random_bin['garbage_value']=random_bin['garbage_value']+25
@@ -74,13 +84,17 @@ def simulation(request):
 	if request.method == 'GET':
 		serializer = SmartBinSerializer(full_bins,many=True)
 		# print("inside get")
-		return Response(serializer.data)
+		qs = dict(serializer.data[0])
+		return Response(qs)
 
 @api_view(['POST',])
 def bin_information(request):
 	try:
-		latitude = float(request.POST.get('latitude'))
-		longitude = float(request.POST.get('longitude'))
+		# latitude = float(request.POST.get('latitude'))
+		# longitude = float(request.POST.get('longitude'))
+		l = eval(request.body.decode('ASCII'))
+		latitude = l['latitude']
+		longitude = l['longitude']
 		print(latitude)
 		list_of_bins = SmartBins.objects.filter(latitude=latitude,longitude=longitude).values()
 		# for key,value in list_of_bins:
@@ -97,4 +111,60 @@ def bin_information(request):
 	if request.method == 'POST':
 			serializer = SmartBinSerializer(list_of_bins,many=True)
 			# print("inside get")
-			return Response(serializer.data)
+			qs = dict(serializer.data[0])
+			return Response(qs)
+
+@api_view(['GET',])
+def reset_information(request):
+	try:
+		list_of_bins = SmartBins.objects.filter(waste_collected=True).values()
+		for i in list_of_bins:
+			i['garbage_value']=0
+			selected_bin = SmartBins.objects.get(pk=i['id'])
+			selected_bin.garbage_value = 0
+			selected_bin.needs_to_be_collected=False
+			print("HO raha hai")
+			selected_bin.save()
+	except Exception as e:
+		traceback.print_exc()
+		print(e)
+		return Response(status=status.HTTP_404_NOT_FOUND)
+	if request.method == 'GET':
+		serializer = SmartBinSerializer(list_of_bins,many=True)
+		qs = dict(serializer.data[0])
+		return Response(qs)
+
+@api_view(['POST',])
+def waste_type(request):
+	try:
+		waste_image = request.data['file']
+		print(waste_image)
+		saved_model = load_model('.\\model_keras.h5')
+		img = cv2.imread('.\\media\\cardboard4.jpg')
+		# print(img)
+		img = cv2.resize(img,(300,300))
+		x = image.img_to_array(img)
+		x = np.expand_dims(x, axis=0)
+		images = np.vstack([x])
+		classes = saved_model.predict_classes(images, batch_size=10)
+		print(classes)
+		waste_type = ""
+		if classes == 0:
+  			waste_type="classboard"
+		elif classes == 1:
+  			waste_type="glass"
+		elif classes == 2:
+  			waste_type="metal"
+		elif classes == 3:
+  			waste_type="paper"
+		elif classes == 4:
+  			waste_type="plastic"
+		elif classes == 5:
+  			waste_type="trash"
+		return Response({'waste_type':waste_type},content_type='application/json')
+	except Exception as e:
+		traceback.print_exc()
+		return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
