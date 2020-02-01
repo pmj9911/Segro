@@ -45,7 +45,7 @@ def simulation(request):
 		count = len(list_of_bins)
 		# print(list_of_bins.values())
 		try:
-			random_bin = SmartBins.objects.filter(needs_to_be_collected=False).values()[randint(0,count-1)]
+			random_bin = SmartBins.objects.filter(bin_full=False).values()[randint(0,count-1)]
 		except:
 			ctx = {
 			"reason" : "needs too be collectrd true",
@@ -69,7 +69,9 @@ def simulation(request):
 			# print("inside else")
 			random_bin['garbage_value']=random_bin['garbage_value']+25
 			if(random_bin['garbage_value']>=75):
+				# random_bin['garbage_value']=random_bin['garbage_value']+25
 				random_bin['needs_to_be_collected']=True
+				
 		# print(random_bin)
 		# print(random_bin['id'])
 		selected_bin = SmartBins.objects.get(pk=random_bin['id'])
@@ -77,7 +79,7 @@ def simulation(request):
 		selected_bin.garbage_value=random_bin['garbage_value']
 		selected_bin.needs_to_be_collected=random_bin['needs_to_be_collected']
 		selected_bin.save()
-		full_bins = SmartBins.objects.filter(needs_to_be_collected=True)
+		ready_to_collect = SmartBins.objects.filter(needs_to_be_collected=True)
 	except Exception as e:
 		traceback.print_exc()
 		print(e)
@@ -85,7 +87,7 @@ def simulation(request):
 	# if reuqest.method=='GET':
 	if request.method == 'GET':
 		try:
-			serializer = SmartBinSerializer(full_bins,many=True)
+			serializer = SmartBinSerializer(ready_to_collect,many=True)
 			# print("inside get")
 			print(serializer.data)
 			print(type(serializer.data))
@@ -130,7 +132,7 @@ def bin_information(request):
 @api_view(['GET',])
 def reset_information(request):
 	try:
-		list_of_bins = SmartBins.objects.filter(garbage_value=75).values()
+		list_of_bins = SmartBins.objects.filter(garbage_value=100).values()
 		for i in list_of_bins:
 			i['garbage_value']=0
 			selected_bin = SmartBins.objects.get(pk=i['id'])
@@ -150,7 +152,6 @@ def reset_information(request):
 		except Exception as e:
 			print(e)
 		return Response({'hello':'hello'},content_type="application/json")
-		
 @api_view(['POST',])
 def waste_type(request):
 	try:

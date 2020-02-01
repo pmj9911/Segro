@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,11 +9,9 @@ import math
 import traceback
 from user.models import Segro_User
 from user.serializers import SegroUserSerializer
-from bins.models import SmartBins,NormalBins
+from bins.models import SmartBins
 import  numpy as np
 import json
-from user.distance import haversine
-
 
 
 # Create your views here.
@@ -42,7 +40,7 @@ def nearby_bin(request):
 		distance_sort=[]
 		bin_list =SmartBins.objects.filter(bin_full=False).values()
 		for i in bin_list:
-			distance.append(haversine(latitude,longitude,i['latitude'],i['longitude']))
+			distance.append(math.acos((math.sin(i['latitude']))*(math.sin(latitude))+(math.cos(i['latitude']))*(math.cos(latitude))*math.cos(i['longitude']-longitude))*1000.0)
 		print(bin_list)
 		print(distance)
 		distance_sort=distance
@@ -67,10 +65,11 @@ def nearby_bin(request):
 			lats.append(bin_list[j]["latitude"])
 			dictionary["longitude"]=bin_list[j]["longitude"]
 			longs.append(bin_list[j]["longitude"])
+			dictionary["distance"]=float(distance[j])
+			distances.append(distance[j])
 			dictionary["names"]=bin_list[j]["location_name"]
 			names.append(bin_list[j]["location_name"])
-			dictionary["distance"]=distance[j]
-			distances.append(distance[j])
+			
 			list_ten_bins.append(dictionary.copy())
 
 			#nearby_ten_bins[(j+1)] = dictionary
@@ -82,36 +81,6 @@ def nearby_bin(request):
 		return Response(nearby_ten_bins,content_type='application/json')
 
 
-	except Exception as e:
-		traceback.print_exc()
-		print(e)
-		return Response(status=405)
-
-@api_view(['POST',])
-def report(request):
-	try:
-		bin= NormalBins(lat=request.data["lat"], lng=request.data["lng"])
-		lat=request.data["lat"]
-		lng=request.data["lng"]
-		bin_list =SmartBins.objects.all().values()
-		flag=0
-		for i in bin_list:
-			distance=haversine(lat,lng,i['latitude'],i['longitude'])
-			if(distance<0.1):
-				flag=1
-				break
-		if(flag==0):
-			nbin_list=NormalBins.objects.all()
-			for j in nbin_list:
-				distance=haversine(lat,lng,j.lat,j.lng)
-				print(distance)
-				if(distance<0.1):
-					print("Already Reported")
-					flag=1
-					break
-			if(flag==0):
-				bin.save()
-		return redirect('home')
 	except Exception as e:
 		traceback.print_exc()
 		print(e)
