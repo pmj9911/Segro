@@ -86,6 +86,36 @@ def nearby_bin(request):
 		print(e)
 		return Response(status=405)
 
+@api_view(['POST',])
+def report(request):
+	try:
+		bin= NormalBins(lat=request.data["lat"], lng=request.data["lng"])
+		lat=request.data["lat"]
+		lng=request.data["lng"]
+		bin_list =SmartBins.objects.all().values()
+		flag=0
+		for i in bin_list:
+			distance=haversine(lat,lng,i['latitude'],i['longitude'])
+			if(distance<0.1):
+				flag=1
+				break
+		if(flag==0):
+			nbin_list=NormalBins.objects.all()
+			for j in nbin_list:
+				distance=haversine(lat,lng,j.lat,j.lng)
+				print(distance)
+				if(distance<0.1):
+					print("Already Reported")
+					flag=1
+					break
+			if(flag==0):
+				bin.save()
+		return redirect('home')
+	except Exception as e:
+		traceback.print_exc()
+		print(e)
+		return Response(status=405)
+
 
  # @api_view(['GET',])
  # def bins_location(request):
