@@ -12,6 +12,8 @@ from user.serializers import SegroUserSerializer
 from bins.models import SmartBins
 import  numpy as np
 import json
+from user.distance import haversine
+
 
 
 # Create your views here.
@@ -40,7 +42,7 @@ def nearby_bin(request):
 		distance_sort=[]
 		bin_list =SmartBins.objects.filter(bin_full=False).values()
 		for i in bin_list:
-			distance.append(math.acos((math.sin(i['latitude']))*(math.sin(latitude))+(math.cos(i['latitude']))*(math.cos(latitude))*math.cos(i['longitude']-longitude))*1000.0)
+			distance.append(haversine(latitude,longitude,i['latitude'],i['longitude']))
 		print(bin_list)
 		print(distance)
 		distance_sort=distance
