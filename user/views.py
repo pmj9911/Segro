@@ -31,13 +31,14 @@ def user_list(request):
 @api_view(['POST',])
 def nearby_bin(request):
 	try:
-		latitude=float(request.data["latitude"])
-		longitude=float(request.data["longitude"])
+		l = eval(request.body.decode('ASCII'))
+		latitude = l['latitude']
+		longitude = l['longitude']
 		data = { "results" : { "latitude": latitude , "longitude": longitude}}
 
 		distance=[]
 		distance_sort=[]
-		bin_list =SmartBins.objects.all().values()
+		bin_list =SmartBins.objects.filter(bin_full=False).values()
 		for i in bin_list:
 			distance.append(math.acos((math.sin(i['latitude']))*(math.sin(latitude))+(math.cos(i['latitude']))*(math.cos(latitude))*math.cos(i['longitude']-longitude))*1000.0)
 		print(bin_list)
@@ -45,7 +46,7 @@ def nearby_bin(request):
 		distance_sort=distance
 		distance_sort.sort()
 		print(distance_sort)
-		distance_sort=distance_sort[:3]
+		distance_sort=distance_sort[:10]
 
 
 		indices= []
@@ -57,11 +58,17 @@ def nearby_bin(request):
 		dictionary={}
 		lats = []
 		longs = []
+		names = []
+		distances=[]
 		for j in indices:
 			dictionary["latitude"]= bin_list[j]["latitude"]
 			lats.append(bin_list[j]["latitude"])
 			dictionary["longitude"]=bin_list[j]["longitude"]
 			longs.append(bin_list[j]["longitude"])
+			dictionary["names"]=bin_list[j]["location_name"]
+			names.append(bin_list[j]["location_name"])
+			dictionary["distance"]=distance[j]
+			distances.append(distance[j])
 			list_ten_bins.append(dictionary.copy())
 
 			#nearby_ten_bins[(j+1)] = dictionary

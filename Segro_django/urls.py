@@ -19,8 +19,12 @@ from . import views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from django.conf import settings
+
+# app_name = "segro_django"
 urlpatterns = [
     path('',views.landing_page,name="home"),
+    path('market_place/',views.market_place,name="market_place"),
+    path('learn_more/',views.learn_more,name="learn_more"),
     path('admin/', admin.site.urls),
     path('users/',include('user.urls')),
     path('collector/',include('collector.urls')),

@@ -48,7 +48,7 @@ def simulation(request):
 			random_bin = SmartBins.objects.filter(needs_to_be_collected=False).values()[randint(0,count-1)]
 		except:
 			ctx = {
-			"reason" : "string",
+			"reason" : "needs too be collectrd true",
 			}
 			return Response(ctx,content_type='application/json',status=200)
 		# print(len(list_of_bins))
@@ -68,6 +68,8 @@ def simulation(request):
 		else:
 			# print("inside else")
 			random_bin['garbage_value']=random_bin['garbage_value']+25
+			if(random_bin['garbage_value']>=75):
+				random_bin['needs_to_be_collected']=True
 		# print(random_bin)
 		# print(random_bin['id'])
 		selected_bin = SmartBins.objects.get(pk=random_bin['id'])
@@ -85,7 +87,11 @@ def simulation(request):
 		try:
 			serializer = SmartBinSerializer(full_bins,many=True)
 			# print("inside get")
-			qs = dict(serializer.data[0])
+			print(serializer.data)
+			print(type(serializer.data))
+			qs = json.loads(json.dumps(serializer.data))
+			print(qs)
+			print(type(qs))
 			return Response(qs)
 		except Exception as e:
 			print(e)
@@ -124,7 +130,7 @@ def bin_information(request):
 @api_view(['GET',])
 def reset_information(request):
 	try:
-		list_of_bins = SmartBins.objects.filter(waste_collected=True).values()
+		list_of_bins = SmartBins.objects.filter(garbage_value=75).values()
 		for i in list_of_bins:
 			i['garbage_value']=0
 			selected_bin = SmartBins.objects.get(pk=i['id'])
@@ -138,9 +144,12 @@ def reset_information(request):
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	if request.method == 'GET':
 		serializer = SmartBinSerializer(list_of_bins,many=True)
-		qs = dict(serializer.data[0])
-		return Response(qs)
-
+		try:
+			qs = dict(serializer.data[0])
+			return Response(qs)
+		except Exception as e:
+			print(e)
+		return Response({'hello':'hello'},content_type="application/json")
 @api_view(['POST',])
 def waste_type(request):
 	try:

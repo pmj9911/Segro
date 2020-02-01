@@ -7,4 +7,4 @@ urlpatterns = [
 			path('simulation/',simulation,name="simulation"),
 			path('bin_information/',bin_information,name="bin_information"),
 			path('reset_information/',reset_information,name="reset_information"),
-			path('waste_type/',waste_type,name="waste_type")]
+			path('waste_type',waste_type,name="waste_type")]
