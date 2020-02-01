@@ -32,7 +32,8 @@ class _ShowRouteState extends State<ShowRoute> {
 
   void setSourceAndDestinationIcons() async {
     sourceIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5), 'assets/DestinationMarker.png');
+        ImageConfiguration(devicePixelRatio: 2.5),
+        'assets/DestinationMarker.png');
     destinationIcon = await BitmapDescriptor.fromAssetImage(
         ImageConfiguration(devicePixelRatio: 2.5),
         'assets/DestinationMarker.png');

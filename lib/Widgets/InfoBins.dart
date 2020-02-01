@@ -17,8 +17,8 @@ class SingleBin {
 }
 
 class Bin {
-  int latitude;
-  int longitude;
+  double latitude;
+  double longitude;
   String locationName;
   double garbageValue;
   String wasteType;
@@ -62,11 +62,27 @@ String postToJson(SingleBin pointCoordiantes) {
 Future<Bin> sendCords(SingleBin pointCoordiantes) async {
   print('@@@@@@@@@@ ${postToJson(pointCoordiantes)}');
   final response = await http.post(
-    'https://23cf619e.ngrok.io/bins/bin_information/',
+    'https://a9b8b479.ngrok.io/bins/bin_information/',
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     },
     body: postToJson(pointCoordiantes),
+  );
+  print('####### ${response.body.toString()}');
+  if (response.statusCode == 200) {
+    print(json.decode(response.body));
+    return Bin.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Failed to load post');
+  }
+}
+
+Future<Bin> getBins() async {
+  final response = await http.get(
+    'https://a9b8b479.ngrok.io/bins/simulation/',
+    headers: {
+      HttpHeaders.contentTypeHeader: 'application/json',
+    },
   );
   print('####### ${response.body.toString()}');
   if (response.statusCode == 200) {
@@ -87,6 +103,11 @@ class _InfoBinsState extends State<InfoBins> {
 
   @override
   Widget build(BuildContext context) {
+    getBins().then((value){
+      print(value.latitude);
+      print(value.longitude);
+    });
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
