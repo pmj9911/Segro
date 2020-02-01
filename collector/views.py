@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated
 from collector.models import Collector
-from bins.models import SmartBins
+from bins.models import SmartBins,NormalBins
 from collector.serializers import CollectorSerializer,BinSerializer
 from collector.TSP import main
 import numpy as np
@@ -15,6 +15,7 @@ import googlemaps
 import json
 import gmaps
 from django.http import JsonResponse
+from user.distance import haversine
 
 
 # Create your views here.
@@ -43,22 +44,38 @@ def bin_full(request):
 def collection_route(request):
 	try:
 		list_of_bins = SmartBins.objects.filter(needs_to_be_collected=True)
+		list_of_nbins=NormalBins.objects.all()
 	except:
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	if request.method=='GET':
 		Mode = "driving"  # "driving", "walking", "bicycling", "transit"	
 		password = "AIzaSyBM8UC4aDTqAriv05bI2mgEGaAax9Lo-sw"
-		lat=[]
-		lng=[]
+		lat= [15.384224]
+		lng= [73.82342]
+		# collec=Collector.objects.all()
+		# c=collec[0]
+		# lat.append(c.col_lat)
+		# lng.append(lng[0])
+		print(lat,lng)
+		dist=[]
 		for k in list_of_bins:
-			lat.append(k.latitude)
-			lng.append(k.longitude)
-		# get the lat and lng of places
+			dist1=haversine(lat[0],lng[0],k.latitude,k.longitude)
+			print(dist1)
+			if(dist1<15):
+				 lat.append(k.latitude)
+				 lng.append(k.longitude)
+				 dist.append(dist1)
+		for h in list_of_nbins:
+			dist2=haversine(lat[0],lng[0],h.lat,h.lng)
+			if(dist2<15):
+				 lat.append(h.lat)
+				 lng.append(h.lng)
+				 dist.append(dist2)
 		lat=np.array(lat)
 		lng=np.array(lng)
-
 		lat = lat.astype(float)
 		lng = lng.astype(float)
+		print(dist)
 
 		# calculate the dist_matrix
 		# distance unit: meter

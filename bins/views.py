@@ -150,6 +150,7 @@ def reset_information(request):
 		except Exception as e:
 			print(e)
 		return Response({'hello':'hello'},content_type="application/json")
+		
 @api_view(['POST',])
 def waste_type(request):
 	try:

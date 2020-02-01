@@ -20,3 +20,8 @@ class SmartBins(models.Model):
 
 	def __str__(self):
 		return self.location_name + " " +str(self.garbage_value)+ " "+ str(self.needs_to_be_collected)+" "+str(self.latitude)+" "+str(self.longitude)	
+
+class NormalBins(models.Model):
+	lat= models.FloatField()
+	lng = models.FloatField()
+#	model_pic = models.ImageField(upload_to = 'images/')
