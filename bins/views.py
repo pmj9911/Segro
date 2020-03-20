@@ -13,7 +13,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
 # import cv2
-import numpy as np
+# import numpy as np
 # from keras.preprocessing import image
 # from keras.models import load_model
 
@@ -79,7 +79,7 @@ def simulation(request):
 		selected_bin.garbage_value=random_bin['garbage_value']
 		selected_bin.needs_to_be_collected=random_bin['needs_to_be_collected']
 		selected_bin.save()
-		ready_to_collect = SmartBins.objects.filter(needs_to_be_collected=True)
+		ready_to_collect = SmartBins.objects.all()
 	except Exception as e:
 		traceback.print_exc()
 		print(e)
@@ -151,14 +151,14 @@ def reset_information(request):
 			return Response(qs)
 		except Exception as e:
 			print(e)
-		return Response({'hello':'hello'},content_type="application/json")
-@api_view(['POST',])
+		return Response({'Success':'Done'},content_type="application/json")
+@api_view(['GET','POST',])
 def waste_type(request):
 	try:
-		waste_image = request.data['file']
-		print(waste_image)
-		saved_model = load_model('.\\model_keras.h5')
-		img = cv2.imread('.\\media\\cardboard4.jpg')
+		# waste_image = request.data['file']
+		# print(waste_image)
+		saved_model = load_model('./model_keras.h5')
+		img = cv2.imread('./media/cardboard4.jpg')
 		# print(img)
 		img = cv2.resize(img,(300,300))
 		x = image.img_to_array(img)

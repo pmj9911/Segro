@@ -19,7 +19,7 @@ class SmartBins(models.Model):
 	waste_collected = models.BooleanField(default=False)
 
 	def __str__(self):
-		return self.location_name + " " +str(self.garbage_value)+ " "+ str(self.needs_to_be_collected)+" "+str(self.latitude)+" "+str(self.longitude)	
+		return self.location_name +  str(self.needs_to_be_collected)
 
 class NormalBins(models.Model):
 	lat= models.FloatField()
