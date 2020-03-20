@@ -21,7 +21,7 @@ class Result {
 
 Future<Result> getRoute() async {
   final response = await http.get(
-    'https://a9b8b479.ngrok.io/collector/route/',
+    'https://00fa9c58.ngrok.io/collector/route/',
   );
   print('####### ${response.body.toString()}');
   if (response.statusCode == 200) {

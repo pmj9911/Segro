@@ -62,7 +62,7 @@ String postToJson(SingleBin pointCoordiantes) {
 Future<Bin> sendCords(SingleBin pointCoordiantes) async {
   print('@@@@@@@@@@ ${postToJson(pointCoordiantes)}');
   final response = await http.post(
-    'https://a9b8b479.ngrok.io/bins/bin_information/',
+    'https://00fa9c58.ngrok.io/bins/bin_information/',
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     },
@@ -79,7 +79,7 @@ Future<Bin> sendCords(SingleBin pointCoordiantes) async {
 
 Future<Bin> getBins() async {
   final response = await http.get(
-    'https://a9b8b479.ngrok.io/bins/simulation/',
+    'https://00fa9c58.ngrok.io/bins/simulation/',
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     },

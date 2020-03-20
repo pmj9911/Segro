@@ -1,5 +1,6 @@
-import 'package:segro/Widgets/NearestBins.dart';
 import 'package:flutter/material.dart';
+
+import '../Widgets/NearestBins.dart';
 
 class UserScreen extends StatefulWidget {
   @override

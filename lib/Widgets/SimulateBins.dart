@@ -46,7 +46,7 @@ class Bin {
 
 Future<Bin> getBins(String target) async {
   final response = await http.get(
-    'https://a9b8b479.ngrok.io/bins/${target}/',
+    'https://00fa9c58.ngrok.io/bins/${target}/',
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     },

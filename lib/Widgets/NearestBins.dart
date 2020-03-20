@@ -31,7 +31,7 @@ String postToJson(double lat, double long) {
 Future<Result> getNearby(double lat, double long) async {
   print("\n\n\nINSIDE GET NEARBY\n\n\n");
   final response = await http.post(
-    'https://a9b8b479.ngrok.io/users/nearby_bin/',
+    'https://00fa9c58.ngrok.io/users/nearby_bin/',
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     },

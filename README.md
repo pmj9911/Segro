@@ -1,4 +1,4 @@
-# segro
+# segrosimulator
 
 A new Flutter project.
 

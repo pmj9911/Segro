@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:segro/Widgets/CollectorWidget.dart';
 import 'package:flutter/material.dart';
+
+import '../Widgets/CollectorWidget.dart';
 
 class CollectorScreen extends StatefulWidget {
   @override

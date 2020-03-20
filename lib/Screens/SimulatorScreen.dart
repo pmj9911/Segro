@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:segro/Widgets/CameraWidget.dart';
-import 'package:segro/Widgets/SimulateBins.dart';
+
+import '../Widgets/CameraWidget.dart';
+import '../Widgets/SimulateBins.dart';
 
 class SimulatorScreen extends StatefulWidget {
   @override
