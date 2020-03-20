@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
-import 'InfoBins.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -46,7 +45,7 @@ class Bin {
 
 Future<Bin> getBins(String target) async {
   final response = await http.get(
-    'https://00fa9c58.ngrok.io/bins/${target}/',
+    'https://28505f93.ngrok.io/bins/${target}/',
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     },
@@ -124,19 +123,17 @@ class _SimulateBinsState extends State<SimulateBins> {
       });
       print("\n\n");
     });
-
   }
 
   void _add(double lat, double long,
       {String locationName = "Starting Point",
       int distance = 0,
       double garbageValue = 75}) {
-    
     // for (int i=0; i < markers.length; i++){
     //   final MarkerId j = MarkerId('marker_id_$i');
     //   print(markers[j]);
     // }
-    
+
 // Marker{markerId: MarkerId{value: marker_id_1}, alpha: 1.0, anchor: Offset(0.5, 1.0), consumeTapEvents: false, draggable: false, flat: false, icon: Instance of 'BitmapDescriptor', infoWindow: InfoWindow{title: Estilo Patio, snippet: 0, anchor: Offset(0.5, 0.0)}, position: LatLng(15.392916, 73.87238271500001), rotation: 0.0, visible: true, zIndex: 0.5, onTap: null}
 
     final String markerIdVal = 'marker_id_$_markerIdCounter';
@@ -145,7 +142,47 @@ class _SimulateBinsState extends State<SimulateBins> {
     _markerIdCounter++;
     final MarkerId markerId = MarkerId(markerIdVal);
     print('$garbageValue lala  $locationName');
-    if (garbageValue == 75) {
+    if (garbageValue < 50) {
+      final Marker marker = Marker(
+        markerId: markerId,
+        position: LatLng(
+          lat,
+          long,
+        ),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        zIndex: 0.5,
+        infoWindow: InfoWindow(
+          title: locationName,
+          snippet: '$distance',
+        ),
+        onDragEnd: (LatLng position) {
+          _onMarkerDragEnd(markerId, position);
+        },
+      );
+      setState(() {
+        markers[markerId] = marker;
+      });
+    } else if (garbageValue < 75) {
+      final Marker marker = Marker(
+        markerId: markerId,
+        position: LatLng(
+          lat,
+          long,
+        ),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+        zIndex: 0.5,
+        infoWindow: InfoWindow(
+          title: locationName,
+          snippet: '$distance',
+        ),
+        onDragEnd: (LatLng position) {
+          _onMarkerDragEnd(markerId, position);
+        },
+      );
+      setState(() {
+        markers[markerId] = marker;
+      });
+    } else if (garbageValue == 75) {
       final Marker marker = Marker(
         markerId: markerId,
         position: LatLng(
@@ -279,6 +316,22 @@ class _SimulateBinsState extends State<SimulateBins> {
     });
   }
 
+  Future<String> resetBins() async {
+    final response = await http.get(
+      'https://28505f93.ngrok.io/bins/reset_information/',
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
+    // print('####### ${response.body.toString()}');
+    if (response.statusCode == 200) {
+      print(json.decode(response.body));
+      return "done";
+    } else {
+      throw Exception('Failed to load post                  ');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double lat = _currentPosition.latitude;
@@ -303,6 +356,16 @@ class _SimulateBinsState extends State<SimulateBins> {
             },
           ),
         ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        elevation: 10,
+        child: Icon(Icons.replay),
+        onPressed: () {
+          resetBins().then((value) {
+            print("$value");
+          });
+        },
       ),
     );
   }
