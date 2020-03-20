@@ -49,7 +49,7 @@ def collection_route(request):
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	if request.method=='GET':
 		Mode = "driving"  # "driving", "walking", "bicycling", "transit"	
-		password = ""
+		password = "AIzaSyBM8UC4aDTqAriv05bI2mgEGaAax9Lo-sw"
 		lat= [15.384224]
 		lng= [73.82342]
 		# collec=Collector.objects.all()
