@@ -28,7 +28,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/',include('user.urls')),
     path('collector/',include('collector.urls')),
-    path('bins/',include('bins.urls'),)
+    path('bins/',include('bins.urls'),),
+    path('webhook/',views.webhook,name="webhooks"),
+    
 ]
 
 urlpatterns += staticfiles_urlpatterns()
