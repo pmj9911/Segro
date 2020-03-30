@@ -21,7 +21,7 @@ def nearBins():
 	list_of_bins = SmartBins.objects.filter(needs_to_be_collected=True)
 	list_of_nbins=NormalBins.objects.all()
 	Mode = "driving"  # "driving", "walking", "bicycling", "transit"	
-	password = "AIzaSyBM8UC4aDTqAriv05bI2mgEGaAax9Lo-sw"
+	password = " "
 	lat= [15.384224]
 	lng= [73.82342]
 	# collec=Collector.objects.all()
@@ -119,7 +119,7 @@ def collection_route(request):
 		return Response(status=status.HTTP_404_NOT_FOUND)
 	if request.method=='GET':
 		Mode = "driving"  # "driving", "walking", "bicycling", "transit"	
-		password = "AIzaSyBM8UC4aDTqAriv05bI2mgEGaAax9Lo-sw"
+		password = " "
 		lat= [15.384224]
 		lng= [73.82342]
 		# collec=Collector.objects.all()
@@ -191,7 +191,7 @@ def collection_route(request):
 # 	list_of_bins = SmartBins.objects.filter(needs_to_be_collected=True)
 # 	list_of_nbins=NormalBins.objects.all()
 # 	Mode = "driving"  # "driving", "walking", "bicycling", "transit"	
-# 	password = "AIzaSyBM8UC4aDTqAriv05bI2mgEGaAax9Lo-sw"
+# 	password = " "
 # 	lat= [15.384224]
 # 	lng= [73.82342]
 # 	# collec=Collector.objects.all()
