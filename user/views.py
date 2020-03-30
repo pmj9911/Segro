@@ -14,6 +14,55 @@ import  numpy as np
 import json
 
 
+def nearby_bins():
+		latitude = 15.384224
+		longitude = 73.82342
+		data = { "results" : { "latitude": latitude , "longitude": longitude}}
+
+		distance=[]
+		distance_sort=[]
+		bin_list =SmartBins.objects.filter(bin_full=False).values()
+		for i in bin_list:
+			distance.append(math.acos((math.sin(i['latitude']))*(math.sin(latitude))+(math.cos(i['latitude']))*(math.cos(latitude))*math.cos(i['longitude']-longitude))*1000.0)
+		print(bin_list)
+		print(distance)
+		distance_sort=distance
+		distance_sort.sort()
+		print(distance_sort)
+		distance_sort=distance_sort[:10]
+
+
+		indices= []
+		for i in range(len(distance)):
+			if distance[i] in distance_sort:
+				indices.append(i)
+		nearby_ten_bins={}
+		list_ten_bins=[]
+		dictionary={}
+		lats = []
+		longs = []
+		names = []
+		distances=[]
+		for j in indices:
+			dictionary["latitude"]= bin_list[j]["latitude"]
+			lats.append(bin_list[j]["latitude"])
+			dictionary["longitude"]=bin_list[j]["longitude"]
+			longs.append(bin_list[j]["longitude"])
+			dictionary["distance"]=float(distance[j])
+			distances.append(distance[j])
+			dictionary["names"]=bin_list[j]["location_name"]
+			names.append(bin_list[j]["location_name"])
+			
+			list_ten_bins.append(dictionary.copy())
+
+			#nearby_ten_bins[(j+1)] = dictionary
+			# nearby_ten_bins=dict(nearby_ten_bins.items()+dictionary.items())
+			print(dictionary)
+		print(list_ten_bins)
+		nearby_ten_bins["results"]=list_ten_bins
+		print(type(nearby_ten_bins))
+		return nearby_ten_bins
+
 # Create your views here.
 @api_view(['GET',])
 def user_list(request):

@@ -6,6 +6,7 @@ from library.df_response_lib import *
 from bins.models import SmartBins
 from collector.models import Collector
 from collector.views import nearBins
+from user.views import nearby_bins
 def landing_page(request):
 	return render(request,'home.html')
 
@@ -27,11 +28,11 @@ def get_types():
 
 def get_response(_type):
 	if _type == "user":
-		fulfillmentText = 'Hello User!'
+		fulfillmentText = 'Hello User! what do you want to do?'
 	elif _type == "admin":
 		fulfillmentText = 'Hello Admin! Please type your password'
 	elif _type == "collector":
-		fulfillmentText = 'Hello Collector!'
+		fulfillmentText = 'Hello Collector! Please enter your collector ID.'
 	else:
 		fulfillmentText = 'Error! the user type does not exist'
 	#create suggestion chips
@@ -45,6 +46,20 @@ def admin_auth(password):
 	if password == "admin123":
 		fulfillmentText = 'Access Granted!!! Please tell which action do you want to take? 1. Get a list of bins. \n 2. Get a list of collectors.'
 	#create suggestion chips
+	ff_response = fulfillment_response()
+	ff_text = ff_response.fulfillment_text(fulfillmentText)
+	reply = ff_response.main_response(ff_text)
+	print(reply)
+	return reply
+
+def collector_auth_route(password):
+	if password == "collect123":
+		fulfillmentText = 'Hello Collector 1 ! These are the routes available for you ! ............'
+	elif password == "collector123":
+		fulfillmentText = 'Hello Collector 2 !These are the routes available for you ! ............'	
+	#create suggestion chips
+	fulfillmentText += nearBins()
+
 	ff_response = fulfillment_response()
 	ff_text = ff_response.fulfillment_text(fulfillmentText)
 	reply = ff_response.main_response(ff_text)
@@ -74,8 +89,15 @@ def admin_use(section):
 	print(reply)	
 	return reply
 
-
 def user_enquiry():
+	fulfillmentText = "Hello user, These are the 10 nearby bins to you! ____"  + str(nearby_bins())
+	ff_response = fulfillment_response()
+	ff_text = ff_response.fulfillment_text(fulfillmentText)
+	reply = ff_response.main_response(ff_text)
+	print(reply)
+	return reply
+
+def collector_route():
 	fulfillmentText = nearBins()
 	print("````````````````````````````````````````````````````````")
 	print(fulfillmentText)
@@ -87,7 +109,7 @@ def user_enquiry():
 
 @csrf_exempt
 def webhook(request):
-# build a request object
+	# build a request object
 	req = json.loads(request.body)
 	#get action from json
 	action = req.get('queryResult').get('action')
@@ -106,8 +128,10 @@ def webhook(request):
 		print(section)
 		reply = admin_use(section)
 	elif action == 'user_enquiry':
-		# section = req.get('queryResult').get('parameters').get('admin-use')
-		# print(section)
+		# name = 
 		reply = user_enquiry()
-	# return generated response
+	elif action == 'collector_auth_route':
+		password = req.get('queryResult').get('parameters').get('password')
+		print(password)
+		reply = collector_auth_route(password)
 	return JsonResponse(reply, safe=False)
