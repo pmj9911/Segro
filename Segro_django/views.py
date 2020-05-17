@@ -58,6 +58,8 @@ def collector_auth_route(password):
 	elif password == "collector123":
 		fulfillmentText = 'Hello Collector 2 !These are the routes available for you ! ............'	
 	#create suggestion chips
+	else:
+		fulfillmentText = "Wrong password"
 	fulfillmentText += nearBins()
 
 	ff_response = fulfillment_response()

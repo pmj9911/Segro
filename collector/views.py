@@ -21,7 +21,7 @@ def nearBins():
 	list_of_bins = SmartBins.objects.filter(needs_to_be_collected=True)
 	list_of_nbins=NormalBins.objects.all()
 	Mode = "driving"  # "driving", "walking", "bicycling", "transit"	
-	password = " "
+	password = ""
 	lat= [15.384224]
 	lng= [73.82342]
 	# collec=Collector.objects.all()
