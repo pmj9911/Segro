@@ -1,0 +1,144 @@
+{% extends 'nav_bar.html' %}
+
+{% block content %}
+<style>
+.price {
+  color: grey;
+  font-size: 22px;
+}
+.card button {
+  border: none;
+  outline: 0;
+  padding: 12px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Float four columns side by side */
+.column {
+  float: left;
+  width: 25%;
+  padding: 0 10px;
+}
+
+/* Remove extra left and right margins, due to padding in columns */
+.row {margin: 0 -5px;}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the counter cards */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+}
+
+/* Responsive columns - one column layout (vertical) on small screens */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<h2 style="text-align:center">Recycled Product Card</h2>
+<div class="container">
+  <div class="row">
+    <div class="column">
+      <div class="card">
+        <img src="/static/img/1.jfif" alt="Denim Jeans" style="width:100%">
+        <h1>Recycled Bottles</h1>
+        <p class="price">Rs 30</p>
+        <p>Contact Details of the seller.</p>
+        <p><button>Add to Cart</button></p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="card">
+        <img src="/static/img/2.jfif" alt="Denim Jeans" style="width:100%">
+        <h1>Vase</h1>
+        <p class="price">Rs 40</p>
+        <p>Contact Details of the seller.</p>
+        <p><button>Add to Cart</button></p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="card">
+        <img src="/static/img/3.jfif" alt="Denim Jeans" style="width:100%">
+        <h1>Vase</h1>
+        <p class="price">Rs50</p>
+        <p>Contact Details of the seller.</p>
+        <p><button>Add to Cart</button></p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="card">
+        <img src="/static/img/4.jfif" alt="Denim Jeans" style="width:100%">
+        <h1>Pencil Stand</h1>
+        <p class="price">Rs 60</p>
+        <p>Contact Details of the seller.</p>
+        <p><button>Add to Cart</button></p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+      <div class="card">
+        <img src="/static/img/5.jfif" alt="Denim Jeans" style="width:100%">
+        <h1>Pen Holder</h1>
+        <p class="price">Rs 40</p>
+        <p>Contact Details of the seller.</p>
+        <p><button>Add to Cart</button></p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="card">
+        <img src="/static/img/6.jfif" alt="Denim Jeans" style="width:100%">
+        <h1>Pots</h1>
+        <p class="price">Rs 40</p>
+        <p>Contact Details of the seller.</p>
+        <p><button>Add to Cart</button></p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="card">
+        <img src="/static/img/7.jfif" alt="Denim Jeans" style="width:100%">
+        <h1>Cutlery</h1>
+        <p class="price">Rs 100</p>
+        <p>Contact Details of the seller.</p>
+        <p><button>Add to Cart</button></p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="card">
+        <img src="/static/img/8.jfif" alt="Denim Jeans" style="width:100%">
+        <h1>Home Decor</h1>
+        <p class="price">Rs 55</p>
+        <p>Contact Details of the seller.</p>
+        <p><button>Add to Cart</button></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
